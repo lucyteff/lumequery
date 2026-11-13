@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Environment variables
+.env
+
+# Generated data
+data/*.csv
+data/*.parquet
+
+# IDE
+.vscode/
+
+# Tests
+.pytest_cache/
+.coverage
+
+# OS
+.DS_Store
+Thumbs.db
