@@ -1,9 +1,8 @@
 
 import os
-
+import time
 from dotenv import load_dotenv
 from google import genai
-
 
 load_dotenv()
 
@@ -17,9 +16,24 @@ client = genai.Client(api_key=API_KEY)
 
 
 def generate_text(prompt):
-    response = client.models.generate_content(
-        model=MODEL,
-        contents=prompt
-    )
+    for attempt in range(3):
+        try:
+            response = client.models.generate_content(
+                model=MODEL,
+                contents=prompt,
+                config={
+                    "http_options": {
+                        "timeout": 20000
+                    }
+                }
+            )
+            return response.text or ""
 
-    return response.text or ""
+        except Exception as error:
+            error_message = str(error)
+
+            if ("503" in error_message or "429" in error_message) and attempt < 2:
+                time.sleep(2 ** (attempt + 1))
+                continue
+
+            raise
