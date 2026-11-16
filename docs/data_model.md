@@ -2,9 +2,9 @@
 
 ## 1. Overview
 
-The LumeQuery database represents a fictional marketplace and delivery platform. It stores operational data related to customers, restaurants, menu items, couriers, orders, deliveries, and payments.
+The LumeQuery database represents a fictional marketplace and delivery platform. It stores operational data related to regions, customers, restaurants, menu items, couriers, orders, deliveries, and payments.
 
-The database uses PostgreSQL and follows a relational model with primary keys, foreign keys, and data integrity constraints.
+The database uses PostgreSQL and follows a relational model with primary keys, foreign keys, unique constraints, and data integrity checks.
 
 ## 2. Database Schemas
 
@@ -14,6 +14,7 @@ The database uses PostgreSQL and follows a relational model with primary keys, f
 ## 3. Tables
 
 ### 3.1 regions
+
 Stores the service regions where the platform operates.
 
 - `region_id`: BIGINT, Primary Key
@@ -23,6 +24,7 @@ Stores the service regions where the platform operates.
 - `is_active`: BOOLEAN, NOT NULL
 
 ### 3.2 customers
+
 Stores fictional customer information.
 
 - `customer_id`: BIGINT, Primary Key
@@ -33,6 +35,7 @@ Stores fictional customer information.
 - `is_active`: BOOLEAN, NOT NULL
 
 ### 3.3 restaurants
+
 Stores restaurants registered on the platform.
 
 - `restaurant_id`: BIGINT, Primary Key
@@ -43,6 +46,7 @@ Stores restaurants registered on the platform.
 - `is_active`: BOOLEAN, NOT NULL
 
 ### 3.4 menu_items
+
 Stores restaurant menu products.
 
 - `menu_item_id`: BIGINT, Primary Key
@@ -53,6 +57,7 @@ Stores restaurant menu products.
 - `is_active`: BOOLEAN, NOT NULL
 
 ### 3.5 couriers
+
 Stores fictional courier information.
 
 - `courier_id`: BIGINT, Primary Key
@@ -62,6 +67,7 @@ Stores fictional courier information.
 - `is_active`: BOOLEAN, NOT NULL
 
 ### 3.6 orders
+
 Stores customer orders.
 
 - `order_id`: BIGINT, Primary Key
@@ -76,6 +82,7 @@ Stores customer orders.
 - `total_amount`: NUMERIC(10,2), NOT NULL
 
 ### 3.7 order_items
+
 Stores the products included in each order.
 
 - `order_item_id`: BIGINT, Primary Key
@@ -84,9 +91,10 @@ Stores the products included in each order.
 - `quantity`: INTEGER, NOT NULL
 - `unit_price`: NUMERIC(10,2), NOT NULL
 
-The unit price represents the product price at the time of the order, preserving historical values even if the menu price changes.
+The unit price represents the product price at the time of the order, preserving historical values independently of the current menu price.
 
 ### 3.8 deliveries
+
 Stores delivery information.
 
 - `delivery_id`: BIGINT, Primary Key
@@ -99,6 +107,7 @@ Stores delivery information.
 - `delivered_at`: TIMESTAMPTZ
 
 ### 3.9 payments
+
 Stores payment information for orders.
 
 - `payment_id`: BIGINT, Primary Key
@@ -119,20 +128,22 @@ Stores payment information for orders.
 - One courier can handle multiple deliveries.
 - One order can have zero or one payment record.
 
-## 5. Business Rules
+## 5. Business Rules and Constraints
 
-- All customer, restaurant, and courier records will use fictional data.
-- Monetary values will use `NUMERIC(10,2)` to avoid floating-point precision issues.
-- Order item prices will preserve the price at the time of purchase.
+- The dataset uses synthetically generated information.
+- Monetary values use `NUMERIC(10,2)` to avoid floating-point precision issues.
+- Order item prices preserve the price at the time of purchase.
 - Order quantities must be greater than zero.
 - Monetary values cannot be negative.
-- Orders, deliveries, and payments must use predefined status values.
-- Cancelled orders must not be counted as completed sales.
+- Order totals must equal subtotal plus delivery fee minus discount.
+- Orders, deliveries, and payments are restricted to predefined status values.
+- Cancelled orders are not counted as completed sales.
 - Analytical revenue metrics must explicitly define which order and payment statuses they include.
 
-## 6. Planned Status Values
+## 6. Status Values
 
 **Orders**
+
 - `pending`
 - `confirmed`
 - `preparing`
@@ -142,6 +153,9 @@ Stores payment information for orders.
 - `cancelled`
 
 **Deliveries**
+
+Allowed by the database constraint:
+
 - `pending`
 - `assigned`
 - `picked_up`
@@ -149,7 +163,10 @@ Stores payment information for orders.
 - `failed`
 - `cancelled`
 
+The current data generator produces `pending`, `assigned`, `picked_up`, and `delivered`.
+
 **Payments**
+
 - `pending`
 - `paid`
 - `failed`
@@ -157,9 +174,9 @@ Stores payment information for orders.
 
 ## 7. Synthetic Dataset
 
-The initial dataset is planned to contain:
+The generated dataset contains approximately six months of fictional marketplace activity.
 
-| Entity | Approximate records |
+| Entity | Records |
 |---|---:|
 | Regions | 10 |
 | Customers | 5,000 |
@@ -167,5 +184,8 @@ The initial dataset is planned to contain:
 | Menu items | 500 |
 | Couriers | 150 |
 | Orders | 20,000 |
+| Order items | 49,570 |
+| Deliveries | 19,002 |
+| Payments | 20,000 |
 
-The data will be synthetically generated to simulate realistic marketplace activity over a six-month period.
+All records are synthetically generated and do not represent real customers, restaurants, or transactions.
